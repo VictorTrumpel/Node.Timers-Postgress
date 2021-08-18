@@ -123,12 +123,14 @@ app.get("/api/timers", async (req, res) => {
   const timers = await knex("timers").select().where({ isActive });
 
   timers.map(async (timer) => {
-    const timerId = timer.id;
-    const progress = new Date() - new Date(timer.start);
+    if (timers.isActive) {
+      const timerId = timer.id;
+      const progress = new Date() - new Date(timer.start);
 
-    timer.progress = progress;
+      timer.progress = progress;
 
-    await knex("timers").where({ id: timerId }).update({ progress, duration: progress, end: new Date() });
+      await knex("timers").where({ id: timerId }).update({ progress, duration: progress, end: new Date() });
+    }
 
     return timer;
   });
